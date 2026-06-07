@@ -622,89 +622,93 @@ export const Home = () => {
         {/* Developer Testing Modal */}
         {showTestingModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="fixed inset-0 bg-slate-950/65 backdrop-blur-sm transition-opacity duration-300" onClick={handleDismissModal}></div>
+            {/* Backdrop */}
+            <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md transition-opacity duration-300" onClick={handleDismissModal}></div>
 
-            <div className="relative bg-slate-900 border border-slate-800 text-white rounded-[2.5rem] p-6 md:p-8 max-w-lg w-full shadow-2xl z-10 space-y-6 animate-fade-in-up">
+            {/* Modal Box */}
+            <div className="relative bg-slate-900/90 backdrop-blur-2xl border border-indigo-500/20 text-white rounded-[2.5rem] p-6 md:p-8 max-w-xl w-full shadow-2xl z-10 space-y-6 animate-fade-in-up glow-indigo">
               
-              <div className="flex items-center space-x-3 pb-4 border-b border-slate-800">
-                <span className="text-2xl select-none animate-bounce">⚠️</span>
+              {/* Header */}
+              <div className="flex items-center space-x-4 pb-4 border-b border-slate-800/80">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 flex-shrink-0 animate-pulse">
+                  ⚠️
+                </div>
                 <div>
                   <h3 className="text-sm font-black text-white tracking-tight uppercase">
                     Developer Beta / Testing Mode
                   </h3>
-                  <p className="text-[9px] text-amber-500 font-bold uppercase tracking-wider mt-0.5">
+                  <p className="text-[9px] text-amber-400 font-extrabold uppercase tracking-widest mt-0.5">
                     Live System Demo Environment
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-4 text-slate-350 text-xs leading-relaxed">
-                <p>
+              {/* Body Content */}
+              <div className="space-y-5 text-slate-300 text-xs leading-relaxed">
+                <p className="text-slate-400 font-medium">
                   This platform is currently running in a developer demo environment. Payment systems are simulated, and no real currency is processed.
                 </p>
 
-                {/* Profile detail */}
-                <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-4 space-y-2">
-                  <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block">
+                {/* Profile Detail Badge */}
+                <div className="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-4.5 space-y-3">
+                  <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block border-b border-slate-900 pb-1.5">
                     Developer & AI Engineer
                   </span>
-                  <div className="space-y-1.5 text-slate-200">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500 font-bold">Developer:</span>
-                      <span className="font-extrabold text-white">Taimur Khan (AI Eng)</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-200">
+                    <div>
+                      <span className="text-slate-500 text-[10px] font-bold block uppercase">Developer</span>
+                      <span className="font-extrabold text-white text-xs">Taimur Khan (AI Eng)</span>
                     </div>
-                    <div className="flex justify-between items-start">
-                      <span className="text-slate-500 font-bold mr-2">Company:</span>
-                      <span className="font-extrabold text-white text-right">Jamshed Computer Academy & Software House</span>
+                    <div>
+                      <span className="text-slate-500 text-[10px] font-bold block uppercase">Company</span>
+                      <span className="font-extrabold text-white text-xs leading-tight block">Jamshed Computer Academy & Software House</span>
                     </div>
                   </div>
                 </div>
 
                 {/* AI Integration pitch */}
-                <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-4 space-y-3">
-                  <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block">
+                <div className="bg-gradient-to-br from-indigo-950/30 to-purple-950/20 border border-indigo-500/15 rounded-2xl p-4.5 space-y-4">
+                  <span className="text-[9px] font-black text-purple-400 uppercase tracking-widest block border-b border-indigo-900/40 pb-1.5">
                     AI Integrations & Custom Software
                   </span>
-                  <p className="text-[11px]">
-                    Agar aap apne business, office management system, Final Year Project (FYP) me AI integrate karna chahte hain, ya koi customized software banwana chahte hain, to hamare sath rabta karen!
+                  <p className="text-[11px] font-semibold text-slate-200 leading-relaxed italic">
+                    "agr apko apna business ka lia , office managemt, , FYP ka lia custom  software /website banana ha . ya pir apna apna business etc ma AI integrate karna ha to ap ham sa rabta kar sakta ha ."
                   </p>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-200 pt-1">
-                    <div className="flex items-center space-x-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/50">
-                      <span className="text-base">✉️</span>
-                      <div className="truncate">
+                    <a href="mailto:developer.aipk@gmail.com" className="flex items-center space-x-2.5 bg-slate-950/40 hover:bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/60 transition-all">
+                      <span className="text-base select-none">✉️</span>
+                      <div className="truncate col-span-1">
                         <span className="text-[8px] text-slate-500 font-bold block uppercase tracking-wider">Email</span>
-                        <a href="mailto:developer.aipk@gmail.com" className="font-bold text-indigo-400 hover:underline">
-                          developer.aipk@gmail.com
-                        </a>
+                        <span className="font-bold text-indigo-300 text-[10px] block truncate">developer.aipk@gmail.com</span>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/50">
-                      <span className="text-base">💬</span>
+                    </a>
+                    
+                    <a href="https://wa.me/923299969277" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2.5 bg-slate-950/40 hover:bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/60 transition-all">
+                      <span className="text-base select-none">💬</span>
                       <div>
                         <span className="text-[8px] text-slate-500 font-bold block uppercase tracking-wider">WhatsApp</span>
-                        <a href="https://wa.me/923299969277" target="_blank" rel="noopener noreferrer" className="font-bold text-emerald-450 hover:underline">
-                          03299969277
-                        </a>
+                        <span className="font-bold text-emerald-400 text-[10px] block">03299969277</span>
                       </div>
-                    </div>
+                    </a>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3.5 pt-2">
                 <a 
                   href="https://wa.me/923299969277" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 px-4 rounded-xl flex items-center justify-center space-x-1.5 shadow-md transition-all active:scale-95 text-center cursor-pointer"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider py-4 px-4 rounded-xl flex items-center justify-center space-x-1.5 shadow-md shadow-emerald-600/10 hover:shadow-emerald-650/30 transition-all active:scale-95 text-center cursor-pointer"
                 >
                   <span>WhatsApp Inquiry</span>
                 </a>
                 <button
                   type="button"
                   onClick={handleDismissModal}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 px-4 rounded-xl transition-all active:scale-95 cursor-pointer"
+                  className="flex-1 bg-slate-800/80 hover:bg-slate-700 text-white border border-slate-700/50 font-extrabold text-xs uppercase tracking-wider py-4 px-4 rounded-xl transition-all active:scale-95 cursor-pointer"
                 >
                   Explore Platform
                 </button>
