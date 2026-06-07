@@ -39,20 +39,20 @@ export const SeatMap = ({ seats = [], selectedSeats = [], onSeatToggle }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm flex flex-col items-center">
+    <div className="bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-[2rem] p-6 shadow-sm flex flex-col items-center w-full max-w-sm">
       {/* Front of Bus indicator */}
-      <div className="w-full max-w-xs border-b-2 border-dashed border-gray-300 pb-4 mb-6 flex justify-between items-center text-gray-400">
-        <span className="text-xs uppercase tracking-wider font-semibold">Front / Driver</span>
-        <div className="flex items-center space-x-1 bg-gray-100 p-2 rounded-lg text-gray-500">
-          <GiSteeringWheel className="w-5 h-5 animate-spin-slow" />
-          <span className="text-xs font-medium">Driver</span>
+      <div className="w-full border-b border-slate-150 pb-4 mb-6 flex justify-between items-center text-slate-450">
+        <span className="text-[10px] uppercase tracking-wider font-black">Driver & Cabin Separator</span>
+        <div className="flex items-center space-x-1.5 bg-slate-100 border border-slate-200/50 px-3 py-1.5 rounded-xl text-slate-600">
+          <GiSteeringWheel className="w-5 h-5 animate-spin-slow text-indigo-550" />
+          <span className="text-[10px] font-black uppercase tracking-wider">Driver</span>
         </div>
       </div>
 
       {/* Seat Grid */}
-      <div className="space-y-3 w-full max-w-xs">
+      <div className="space-y-3.5 w-full px-2">
         {rows.map((rowSeats, rowIndex) => (
-          <div key={rowIndex} className="flex justify-between items-center">
+          <div key={rowIndex} className="flex justify-between items-center gap-2">
             {rowSeats.map((seat, colIndex) => {
               const colNumber = colIndex + 1;
               const isAisle = maxCol === 4 && colNumber === 3; // Standard 2+2 aisle before col 3
@@ -60,23 +60,36 @@ export const SeatMap = ({ seats = [], selectedSeats = [], onSeatToggle }) => {
               const seatNum = seat ? seat.seat_number : '';
               const isBooked = seat ? seat.is_booked : false;
               const isSelected = selectedSeats.includes(seatNum);
+              const isLadiesSeat = seat && (seat.row_number === 1 || seat.row_number === 2);
 
               // Seat button classes
-              let seatClass = 'w-10 h-10 rounded-lg flex items-center justify-center text-xs font-semibold shadow-sm transition-premium ';
+              let seatClass = 'w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black shadow-sm transition-all duration-300 active:scale-95 ';
               if (!seat) {
                 seatClass += 'bg-transparent shadow-none cursor-default';
               } else if (isBooked) {
-                seatClass += 'bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed';
+                if (isLadiesSeat) {
+                  seatClass += 'bg-rose-50 text-rose-300 border border-rose-150 cursor-not-allowed';
+                } else {
+                  seatClass += 'bg-slate-100 text-slate-350 border border-slate-200 cursor-not-allowed';
+                }
               } else if (isSelected) {
-                seatClass += 'bg-blue-600 text-white hover:bg-blue-700 ring-2 ring-blue-500 ring-offset-1';
+                seatClass += 'bg-gradient-to-tr from-indigo-500 via-indigo-600 to-indigo-650 text-white hover:from-indigo-600 hover:to-indigo-700 ring-2 ring-indigo-500/40 shadow-md shadow-indigo-600/10 scale-105';
               } else {
-                seatClass += 'bg-white text-emerald-600 border border-emerald-500 hover:bg-emerald-50 hover:border-emerald-600';
+                if (isLadiesSeat) {
+                  seatClass += 'bg-white text-rose-500 border border-rose-350 hover:bg-rose-50/20 hover:border-rose-400 hover:shadow-sm hover:shadow-rose-450/15';
+                } else {
+                  seatClass += 'bg-white text-emerald-600 border border-emerald-400 hover:bg-emerald-50/20 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/15';
+                }
               }
 
               return (
                 <React.Fragment key={colIndex}>
                   {/* Render Aisle Spacer */}
-                  {isAisle && <div className="w-8 h-10 flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase tracking-wider">Aisle</div>}
+                  {isAisle && (
+                    <div className="w-6 h-10 flex items-center justify-center">
+                      <div className="h-full w-0.5 bg-slate-100 border-l border-dashed border-slate-200"></div>
+                    </div>
+                  )}
 
                   {seat ? (
                     <button
@@ -84,7 +97,7 @@ export const SeatMap = ({ seats = [], selectedSeats = [], onSeatToggle }) => {
                       disabled={isBooked}
                       onClick={() => handleSeatClick(seat)}
                       className={seatClass}
-                      title={`Seat ${seatNum} - ${isBooked ? 'Booked' : isSelected ? 'Selected' : 'Available'}`}
+                      title={`Seat ${seatNum} - ${isBooked ? 'Booked' : isSelected ? 'Selected' : isLadiesSeat ? 'Ladies Preferred' : 'Available'}`}
                     >
                       {isBooked ? 'X' : seatNum}
                     </button>
@@ -99,18 +112,22 @@ export const SeatMap = ({ seats = [], selectedSeats = [], onSeatToggle }) => {
       </div>
 
       {/* Legend */}
-      <div className="w-full max-w-xs border-t border-gray-100 mt-6 pt-4 grid grid-cols-3 gap-2 text-xs font-medium text-gray-500">
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 rounded border border-emerald-500 bg-white"></div>
-          <span>Available</span>
+      <div className="w-full border-t border-slate-100 mt-6 pt-5 grid grid-cols-2 gap-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+        <div className="flex items-center space-x-2 bg-slate-50/50 p-2 rounded-xl border border-slate-100">
+          <div className="w-4 h-4 rounded-md border border-emerald-400 bg-white"></div>
+          <span className="text-slate-600">Available</span>
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 rounded bg-blue-600"></div>
-          <span>Selected</span>
+        <div className="flex items-center space-x-2 bg-slate-50/50 p-2 rounded-xl border border-slate-100">
+          <div className="w-4 h-4 rounded-md border border-rose-350 bg-white"></div>
+          <span className="text-rose-500">Ladies</span>
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 rounded bg-gray-200 border border-gray-300 flex items-center justify-center text-[8px] text-gray-400">X</div>
-          <span>Booked</span>
+        <div className="flex items-center space-x-2 bg-slate-50/50 p-2 rounded-xl border border-slate-100">
+          <div className="w-4 h-4 rounded bg-gradient-to-tr from-indigo-500 to-indigo-650"></div>
+          <span className="text-indigo-600">Selected</span>
+        </div>
+        <div className="flex items-center space-x-2 bg-slate-50/50 p-2 rounded-xl border border-slate-100">
+          <div className="w-4 h-4 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-[8px] text-slate-400">X</div>
+          <span className="text-slate-500">Booked</span>
         </div>
       </div>
     </div>

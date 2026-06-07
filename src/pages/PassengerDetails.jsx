@@ -15,6 +15,7 @@ export const PassengerDetails = () => {
   const [seats, setSeats] = useState([]);
   const [passengers, setPassengers] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [expandedIndex, setExpandedIndex] = useState(0);
 
   useEffect(() => {
     const savedRoute = sessionStorage.getItem('selected_route');
@@ -166,69 +167,95 @@ export const PassengerDetails = () => {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {passengers.map((p, index) => (
-              <div
-                key={p.seat_number}
-                className="bg-white border border-slate-200/80 rounded-[2rem] p-6 shadow-sm space-y-5 animate-fade-in-up"
-              >
-                <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                  <span className="font-extrabold text-slate-700 text-xs uppercase tracking-wider">Passenger #{index + 1}</span>
-                  <span className="bg-indigo-600 text-white text-xs font-black px-3.5 py-1.5 rounded-xl shadow-sm">
-                    Seat {p.seat_number}
-                  </span>
+            {passengers.map((p, index) => {
+              const isExpanded = expandedIndex === index;
+              return (
+                <div
+                  key={p.seat_number}
+                  className={`bg-white border rounded-[2rem] p-6 shadow-sm space-y-5 animate-fade-in-up transition-all duration-300 ${
+                    isExpanded 
+                      ? 'border-indigo-400 shadow-md shadow-indigo-500/5' 
+                      : 'border-slate-200/80 hover:border-slate-350'
+                  }`}
+                >
+                  {/* Card Header (clickable to toggle accordion) */}
+                  <div 
+                    onClick={() => setExpandedIndex(prev => prev === index ? -1 : index)}
+                    className="flex justify-between items-center pb-1 cursor-pointer select-none"
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <span className="font-extrabold text-slate-700 text-xs uppercase tracking-wider">Passenger #{index + 1}</span>
+                      {!isExpanded && p.name && (
+                        <span className="text-[10px] text-slate-400 font-extrabold truncate max-w-[150px] sm:max-w-xs uppercase">
+                          — {p.name} ({p.gender}, {p.age} yrs)
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="bg-indigo-600 text-white text-[10px] font-black px-3.5 py-1.5 rounded-xl shadow-sm">
+                        Seat {p.seat_number}
+                      </span>
+                      <span className="text-slate-400 text-xs font-bold transition-transform duration-250 select-none">
+                        {isExpanded ? '▲' : '▼'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card Body (collapsible) */}
+                  {isExpanded && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100 animate-fade-in-up">
+                      {/* Name */}
+                      <div className="flex flex-col space-y-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Ali Khan"
+                          value={p.name}
+                          onChange={(e) => handleInputChange(index, 'name', e.target.value)}
+                          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500/35 focus:border-indigo-500 outline-none transition-all"
+                        />
+                      </div>
+
+                      {/* Age */}
+                      <div className="flex flex-col space-y-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                          Age
+                        </label>
+                        <input
+                          type="number"
+                          required
+                          min="1"
+                          max="100"
+                          placeholder="e.g. 25"
+                          value={p.age}
+                          onChange={(e) => handleInputChange(index, 'age', e.target.value)}
+                          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500/35 focus:border-indigo-500 outline-none transition-all"
+                        />
+                      </div>
+
+                      {/* Gender */}
+                      <div className="flex flex-col space-y-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                          Gender
+                        </label>
+                        <select
+                          value={p.gender}
+                          onChange={(e) => handleInputChange(index, 'gender', e.target.value)}
+                          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500/35 focus:border-indigo-500 outline-none transition-all cursor-pointer"
+                        >
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Name */}
-                  <div className="flex flex-col space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Ali Khan"
-                      value={p.name}
-                      onChange={(e) => handleInputChange(index, 'name', e.target.value)}
-                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Age */}
-                  <div className="flex flex-col space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      Age
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      min="1"
-                      max="100"
-                      placeholder="e.g. 25"
-                      value={p.age}
-                      onChange={(e) => handleInputChange(index, 'age', e.target.value)}
-                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Gender */}
-                  <div className="flex flex-col space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      Gender
-                    </label>
-                    <select
-                      value={p.gender}
-                      onChange={(e) => handleInputChange(index, 'gender', e.target.value)}
-                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Submission Actions */}
             <div className="flex justify-end">

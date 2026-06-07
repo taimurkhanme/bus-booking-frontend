@@ -54,14 +54,14 @@ export const Footer = () => {
             <ul className="mt-4 space-y-2 text-sm text-gray-400 font-sans">
               <li className="flex flex-col">
                 <span className="text-xs text-gray-500">Helpline:</span>
-                <a href="tel:+923001234567" className="hover:text-white transition-premium font-medium">
-                  +92 (300) 123-4567
+                <a href="tel:+923299969277" className="hover:text-white transition-premium font-medium">
+                  +92 (329) 996-9277
                 </a>
               </li>
               <li className="flex flex-col">
                 <span className="text-xs text-gray-500">Email:</span>
-                <a href="mailto:support@busbook.pk" className="hover:text-white transition-premium">
-                  support@busbook.pk
+                <a href="mailto:developer.aipk@gmail.com" className="hover:text-white transition-premium">
+                  developer.aipk@gmail.com
                 </a>
               </li>
             </ul>

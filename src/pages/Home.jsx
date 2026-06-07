@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axios';
-import { HiSearch, HiLockClosed, HiTicket, HiSupport, HiArrowRight } from 'react-icons/hi';
+import { HiSearch, HiLockClosed, HiTicket, HiSupport, HiArrowRight, HiLocationMarker, HiChevronDown, HiMinus, HiPlus } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
 const CITIES = [
@@ -28,6 +28,46 @@ export const Home = () => {
   });
   const [passengers, setPassengers] = useState(1);
   const [showTestingModal, setShowTestingModal] = useState(false);
+
+  // Custom Autocomplete State & Refs
+  const fromRef = React.useRef(null);
+  const toRef = React.useRef(null);
+
+  const [fromSearch, setFromSearch] = useState('');
+  const [showFromDropdown, setShowFromDropdown] = useState(false);
+  const [fromActiveIndex, setFromActiveIndex] = useState(-1);
+
+  const [toSearch, setToSearch] = useState('');
+  const [showToDropdown, setShowToDropdown] = useState(false);
+  const [toActiveIndex, setToActiveIndex] = useState(-1);
+
+  // Click outside handler for dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (fromRef.current && !fromRef.current.contains(event.target)) {
+        setShowFromDropdown(false);
+      }
+      if (toRef.current && !toRef.current.contains(event.target)) {
+        setShowToDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Sync searches with cities state on blur / drop-down close
+  useEffect(() => {
+    if (!showFromDropdown && fromCity !== fromSearch) {
+      setFromSearch(fromCity);
+    }
+  }, [showFromDropdown, fromCity]);
+
+  useEffect(() => {
+    if (!showToDropdown && toCity !== toSearch) {
+      setToSearch(toCity);
+    }
+  }, [showToDropdown, toCity]);
+
 
   useEffect(() => {
     const dismissed = sessionStorage.getItem('dismissed_testing_modal');
@@ -63,17 +103,107 @@ export const Home = () => {
 
   const minDate = new Date().toISOString().split('T')[0];
 
+  // Autocomplete filtration lists
+  const filteredFromCities = cities.filter(city => 
+    city.toLowerCase().includes(fromSearch.toLowerCase())
+  );
+
+  const filteredToCities = cities.filter(city => 
+    city !== fromCity && city.toLowerCase().includes(toSearch.toLowerCase())
+  );
+
+  const selectFromCity = (city) => {
+    setFromCity(city);
+    setFromSearch(city);
+    setShowFromDropdown(false);
+    setFromActiveIndex(-1);
+  };
+
+  const selectToCity = (city) => {
+    setToCity(city);
+    setToSearch(city);
+    setShowToDropdown(false);
+    setToActiveIndex(-1);
+  };
+
+  const handleFromKeyDown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setFromActiveIndex(prev => 
+        prev < filteredFromCities.length - 1 ? prev + 1 : 0
+      );
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setFromActiveIndex(prev => 
+        prev > 0 ? prev - 1 : filteredFromCities.length - 1
+      );
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (fromActiveIndex >= 0 && fromActiveIndex < filteredFromCities.length) {
+        selectFromCity(filteredFromCities[fromActiveIndex]);
+      } else if (filteredFromCities.length > 0) {
+        selectFromCity(filteredFromCities[0]);
+      }
+    } else if (e.key === 'Escape') {
+      setShowFromDropdown(false);
+    }
+  };
+
+  const handleToKeyDown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setToActiveIndex(prev => 
+        prev < filteredToCities.length - 1 ? prev + 1 : 0
+      );
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setToActiveIndex(prev => 
+        prev > 0 ? prev - 1 : filteredToCities.length - 1
+      );
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (toActiveIndex >= 0 && toActiveIndex < filteredToCities.length) {
+        selectToCity(filteredToCities[toActiveIndex]);
+      } else if (filteredToCities.length > 0) {
+        selectToCity(filteredToCities[0]);
+      }
+    } else if (e.key === 'Escape') {
+      setShowToDropdown(false);
+    }
+  };
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (!fromCity) {
+
+    let finalFrom = fromCity;
+    if (!finalFrom && fromSearch) {
+      const match = cities.find(c => c.toLowerCase() === fromSearch.toLowerCase());
+      if (match) {
+        finalFrom = match;
+        setFromCity(match);
+        setFromSearch(match);
+      }
+    }
+
+    let finalTo = toCity;
+    if (!finalTo && toSearch) {
+      const match = cities.find(c => c.toLowerCase() === toSearch.toLowerCase());
+      if (match) {
+        finalTo = match;
+        setToCity(match);
+        setToSearch(match);
+      }
+    }
+
+    if (!finalFrom) {
       toast.error('Please select a departure city!');
       return;
     }
-    if (!toCity) {
+    if (!finalTo) {
       toast.error('Please select a destination city!');
       return;
     }
-    if (fromCity === toCity) {
+    if (finalFrom === finalTo) {
       toast.error('Departure and Destination cities cannot be the same.');
       return;
     }
@@ -86,15 +216,17 @@ export const Home = () => {
     sessionStorage.setItem('search_passengers', passengers);
 
     navigate(
-      `/search?source=${encodeURIComponent(fromCity)}&destination=${encodeURIComponent(
-        toCity
+      `/search?source=${encodeURIComponent(finalFrom)}&destination=${encodeURIComponent(
+        finalTo
       )}&date=${encodeURIComponent(date)}&t=${Date.now()}`
     );
   };
 
   const handleQuickRoute = (from, to) => {
     setFromCity(from);
+    setFromSearch(from);
     setToCity(to);
+    setToSearch(to);
     toast.success(`Selected route: ${from} to ${to}. Choose date & search!`);
   };
 
@@ -135,46 +267,108 @@ export const Home = () => {
         </div>
 
         {/* Floating Search Card */}
-        <div className="max-w-4xl mx-auto mt-16 bg-white/95 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-8 shadow-2xl text-slate-800 border border-slate-100 relative z-10 animate-fade-in-up">
-          <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* From City */}
-            <div className="flex flex-col space-y-1">
-              <label htmlFor="from-city" className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+        <div className="max-w-5xl mx-auto mt-16 bg-white/95 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-8 shadow-2xl text-slate-800 border border-slate-100 relative z-10 animate-fade-in-up">
+          <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            {/* From City Autocomplete */}
+            <div ref={fromRef} className="flex flex-col space-y-1 relative">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
                 Departure City
               </label>
-              <select
-                id="from-city"
-                value={fromCity}
-                onChange={(e) => setFromCity(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl px-3 py-3.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-              >
-                <option value="">Select Departure</option>
-                {cities.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
+                  <HiLocationMarker className="w-4 h-4 text-indigo-500" />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Select Departure"
+                  value={fromSearch}
+                  onFocus={() => setShowFromDropdown(true)}
+                  onChange={(e) => {
+                    setFromSearch(e.target.value);
+                    setFromCity('');
+                    setShowFromDropdown(true);
+                    setFromActiveIndex(-1);
+                  }}
+                  onKeyDown={handleFromKeyDown}
+                  className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl pl-9 pr-8 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                />
+                <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 pointer-events-none">
+                  <HiChevronDown className="w-4 h-4" />
+                </span>
+              </div>
+
+              {showFromDropdown && (
+                <div className="absolute top-[calc(100%+4px)] left-0 w-full bg-white/95 backdrop-blur-md border border-slate-150 rounded-2xl shadow-xl z-30 max-h-48 overflow-y-auto custom-scrollbar animate-fade-in-up">
+                  {filteredFromCities.length === 0 ? (
+                    <div className="p-3 text-xs text-slate-400 italic text-center">No cities found</div>
+                  ) : (
+                    filteredFromCities.map((city, idx) => (
+                      <button
+                        key={city}
+                        type="button"
+                        onClick={() => selectFromCity(city)}
+                        className={`w-full text-left px-4 py-2.5 text-xs font-semibold flex items-center space-x-2 border-b border-slate-50 last:border-0 autocomplete-item ${
+                          idx === fromActiveIndex ? 'autocomplete-item-active' : ''
+                        }`}
+                      >
+                        <span className="text-slate-400 text-xs">📍</span>
+                        <span>{city}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* To City */}
-            <div className="flex flex-col space-y-1">
-              <label htmlFor="to-city" className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            {/* To City Autocomplete */}
+            <div ref={toRef} className="flex flex-col space-y-1 relative">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
                 Destination City
               </label>
-              <select
-                id="to-city"
-                value={toCity}
-                onChange={(e) => setToCity(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl px-3 py-3.5 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-              >
-                <option value="">Select Destination</option>
-                {cities.filter((c) => c !== fromCity).map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
+                  <HiLocationMarker className="w-4 h-4 text-purple-500" />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Select Destination"
+                  value={toSearch}
+                  onFocus={() => setShowToDropdown(true)}
+                  onChange={(e) => {
+                    setToSearch(e.target.value);
+                    setToCity('');
+                    setShowToDropdown(true);
+                    setToActiveIndex(-1);
+                  }}
+                  onKeyDown={handleToKeyDown}
+                  className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl pl-9 pr-8 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                />
+                <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 pointer-events-none">
+                  <HiChevronDown className="w-4 h-4" />
+                </span>
+              </div>
+
+              {showToDropdown && (
+                <div className="absolute top-[calc(100%+4px)] left-0 w-full bg-white/95 backdrop-blur-md border border-slate-150 rounded-2xl shadow-xl z-30 max-h-48 overflow-y-auto custom-scrollbar animate-fade-in-up">
+                  {filteredToCities.length === 0 ? (
+                    <div className="p-3 text-xs text-slate-400 italic text-center">No cities found</div>
+                  ) : (
+                    filteredToCities.map((city, idx) => (
+                      <button
+                        key={city}
+                        type="button"
+                        onClick={() => selectToCity(city)}
+                        className={`w-full text-left px-4 py-2.5 text-xs font-semibold flex items-center space-x-2 border-b border-slate-50 last:border-0 autocomplete-item ${
+                          idx === toActiveIndex ? 'autocomplete-item-active' : ''
+                        }`}
+                      >
+                        <span className="text-slate-400 text-xs">📍</span>
+                        <span>{city}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Travel Date */}
@@ -188,18 +382,44 @@ export const Home = () => {
                 min={minDate}
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl px-3 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl px-3 py-3 text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all h-[42px] md:h-[46px]"
               />
+            </div>
+
+            {/* Passengers Stepper */}
+            <div className="flex flex-col space-y-1">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                Passengers
+              </label>
+              <div className="flex items-center justify-between bg-slate-50 border border-slate-200/80 rounded-2xl p-1.5 h-[42px] md:h-[46px]">
+                <button
+                  type="button"
+                  onClick={() => setPassengers(p => Math.max(1, p - 1))}
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white hover:bg-slate-105 border border-slate-200 flex items-center justify-center text-slate-650 font-extrabold transition-all active:scale-90 shadow-sm cursor-pointer"
+                >
+                  <HiMinus className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-xs font-black text-slate-800 select-none">
+                  {passengers} {passengers === 1 ? 'Pass' : 'Pass'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPassengers(p => Math.min(6, p + 1))}
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white hover:bg-slate-105 border border-slate-200 flex items-center justify-center text-slate-650 font-extrabold transition-all active:scale-90 shadow-sm cursor-pointer"
+                >
+                  <HiPlus className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
 
             {/* Search Button */}
             <div className="flex flex-col justify-end">
               <button
                 type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 transition-all duration-350 active:scale-95"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 transition-all duration-350 active:scale-95 cursor-pointer h-[42px] md:h-[46px]"
               >
-                <HiSearch className="w-5 h-5" />
-                <span className="text-xs uppercase tracking-wider font-extrabold">Search Buses</span>
+                <HiSearch className="w-5 h-5 flex-shrink-0" />
+                <span className="text-xs uppercase tracking-wider font-extrabold whitespace-nowrap">Search Buses</span>
               </button>
             </div>
           </form>
@@ -285,9 +505,9 @@ export const Home = () => {
               <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-5 text-xl shadow-sm">
                 <HiSupport className="w-6 h-6" />
               </div>
-              <h3 className="font-extrabold text-slate-800 text-sm">24/7 Support Desk</h3>
+              <h3 className="font-extrabold text-slate-800 text-sm">24/7 Helpline Support</h3>
               <p className="text-xs text-slate-400 mt-3 leading-relaxed">
-                Our helpline is active around the clock to assist you with booking delays, queries, or route adjustments.
+                Jamshed Software House support is active around the clock. Contact us at <a href="tel:+923299969277" className="text-indigo-600 font-extrabold">+92 329 9969277</a> or <a href="mailto:developer.aipk@gmail.com" className="text-indigo-650 font-semibold">developer.aipk@gmail.com</a>.
               </p>
             </div>
 
@@ -351,7 +571,7 @@ export const Home = () => {
                       <div>
                         <h3 className="text-lg font-black text-white tracking-tight">Taimur Khan</h3>
                         <p className="text-xs text-indigo-400 font-extrabold tracking-wide uppercase mt-0.5">
-                          AI Eng & CEO
+                          AI Engineer
                         </p>
                       </div>
                     </div>
@@ -426,7 +646,7 @@ export const Home = () => {
                 {/* Profile detail */}
                 <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-4 space-y-2">
                   <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block">
-                    Developer & CEO
+                    Developer & AI Engineer
                   </span>
                   <div className="space-y-1.5 text-slate-200">
                     <div className="flex justify-between">

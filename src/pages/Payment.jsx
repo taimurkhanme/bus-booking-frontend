@@ -414,9 +414,16 @@ export const Payment = () => {
                   type="button"
                   onClick={handlePayNow}
                   disabled={paying}
-                  className="w-full bg-indigo-600 hover:bg-indigo-750 disabled:bg-slate-100 disabled:text-slate-400 text-white font-extrabold text-xs uppercase tracking-wider py-4.5 px-6 rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/25 transition-all duration-300 active:scale-95 text-base cursor-pointer"
+                  className="w-full bg-indigo-600 hover:bg-indigo-750 disabled:bg-slate-100 disabled:text-slate-400 text-white font-extrabold text-xs uppercase tracking-wider py-4.5 px-6 rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/25 transition-all duration-300 active:scale-95 text-base cursor-pointer hover-glow"
                 >
-                  <HiCheckCircle className="w-5 h-5" />
+                  {paying ? (
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <HiCheckCircle className="w-5 h-5" />
+                  )}
                   <span>{paying ? 'Connecting Gateway...' : 'Pay with Razorpay'}</span>
                 </button>
               ) : (
@@ -424,9 +431,16 @@ export const Payment = () => {
                   type="button"
                   onClick={handleSimulatePaymentSuccess}
                   disabled={paying}
-                  className="w-full bg-indigo-600 hover:bg-indigo-750 disabled:bg-slate-100 disabled:text-slate-400 text-white font-extrabold text-xs uppercase tracking-wider py-4.5 px-6 rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/25 transition-all duration-300 active:scale-95 text-base cursor-pointer"
+                  className="w-full bg-indigo-600 hover:bg-indigo-750 disabled:bg-slate-100 disabled:text-slate-400 text-white font-extrabold text-xs uppercase tracking-wider py-4.5 px-6 rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/25 transition-all duration-300 active:scale-95 text-base cursor-pointer hover-glow"
                 >
-                  <HiCheckCircle className="w-5 h-5" />
+                  {paying ? (
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <HiCheckCircle className="w-5 h-5" />
+                  )}
                   <span>
                     {paying
                       ? 'Authorizing Wallet...'
