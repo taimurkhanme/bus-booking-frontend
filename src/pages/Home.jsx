@@ -286,6 +286,87 @@ export const Home = () => {
             </div>
           </div>
         </div>
+
+        {/* Developer & CEO Spotlight Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-24 animate-fade-in-up">
+          <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-[3.5rem] p-8 md:p-14 shadow-2xl border border-white/10 z-10">
+            {/* Subtle background glow effect */}
+            <div className="absolute -right-24 -bottom-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -left-24 -top-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* Left Column: Heading and Brand Details */}
+              <div className="lg:col-span-7 space-y-5">
+                <span className="text-indigo-400 font-extrabold text-[10px] uppercase tracking-widest bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-full inline-block">
+                  Core Leadership & Engineering
+                </span>
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-none bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
+                  Behind the Platform
+                </h2>
+                <p className="text-xs md:text-sm text-slate-400 leading-relaxed font-medium max-w-xl">
+                  BusBook Pakistan is engineered with state-of-the-art architectures to provide seamless, secure, and rapid transit bookings. Designed and led by pioneering AI engineering and software standards.
+                </p>
+                
+                {/* Organization Badges */}
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <span className="text-[10px] font-bold bg-slate-800/85 border border-slate-700/50 px-3.5 py-2 rounded-xl text-slate-300 select-none">
+                    ⚡ Advanced Agentic Systems
+                  </span>
+                  <span className="text-[10px] font-bold bg-slate-800/85 border border-slate-700/50 px-3.5 py-2 rounded-xl text-slate-300 select-none">
+                    💻 Full-Stack Automation
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Column: Premium Showcase Profile Card */}
+              <div className="lg:col-span-5">
+                <div className="relative group">
+                  {/* Glow ring behind card on hover */}
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-650 rounded-[2.5rem] blur opacity-25 group-hover:opacity-60 transition duration-500"></div>
+                  
+                  {/* Glassmorphic Profile Card */}
+                  <div className="relative bg-slate-900/85 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-6 md:p-8 space-y-6">
+                    
+                    {/* CEO Info Block */}
+                    <div className="flex items-center space-x-4">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-indigo-500/20">
+                        TK
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-black text-white tracking-tight">Taimur Khan</h3>
+                        <p className="text-xs text-indigo-400 font-extrabold tracking-wide uppercase mt-0.5">
+                          AI Eng & CEO
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Company & Email Details */}
+                    <div className="space-y-3 pt-2 border-t border-white/5 text-xs text-slate-300">
+                      <div className="flex items-center space-x-3 bg-slate-950/40 p-3 rounded-xl border border-white/5">
+                        <span className="text-lg select-none">🏢</span>
+                        <div>
+                          <span className="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Company</span>
+                          <span className="font-extrabold text-white">Jamshed Computer Academy & Software House</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-3 bg-slate-950/40 p-3 rounded-xl border border-white/5">
+                        <span className="text-lg select-none">✉️</span>
+                        <div>
+                          <span className="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Contact Email</span>
+                          <a href="mailto:taimurkhan.me@gmail.com" className="font-extrabold text-indigo-300 hover:text-indigo-400 transition-colors">
+                            taimurkhan.me@gmail.com
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

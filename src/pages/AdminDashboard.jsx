@@ -226,6 +226,40 @@ export const AdminDashboard = () => {
     }
   };
 
+  // Handle Bus deletion
+  const handleDeleteBus = async (busId) => {
+    if (!window.confirm('Are you sure you want to delete this bus? This will remove all associated routes and cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await axiosInstance.delete(`/buses/${busId}/`);
+      toast.success('Bus deleted successfully.');
+      fetchData();
+    } catch (err) {
+      console.error('Error deleting bus', err);
+      const errorMsg = err.response?.data?.error || err.response?.data?.detail || 'Failed to delete bus.';
+      toast.error(errorMsg);
+    }
+  };
+
+  // Handle Route deletion
+  const handleDeleteRoute = async (routeId) => {
+    if (!window.confirm('Are you sure you want to delete this route? All layouts and seat layouts will be permanently removed.')) {
+      return;
+    }
+
+    try {
+      await axiosInstance.delete(`/routes/${routeId}/`);
+      toast.success('Route deleted successfully.');
+      fetchData();
+    } catch (err) {
+      console.error('Error deleting route', err);
+      const errorMsg = err.response?.data?.error || err.response?.data?.detail || 'Failed to delete route.';
+      toast.error(errorMsg);
+    }
+  };
+
   // Filter lists based on search queries
   const filteredBookings = bookings.filter((b) => {
     const term = bookingSearch.toLowerCase();
@@ -614,6 +648,7 @@ export const AdminDashboard = () => {
                   <th className="pb-3">Seat Availability</th>
                   <th className="pb-3">Ticket Price</th>
                   <th className="pb-3">Status</th>
+                  <th className="pb-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -657,6 +692,15 @@ export const AdminDashboard = () => {
                       >
                         {r.is_active ? 'Active' : 'Cancelled'}
                       </span>
+                    </td>
+                    <td className="py-4 text-center">
+                      <button
+                        onClick={() => handleDeleteRoute(r.id)}
+                        className="bg-red-50 hover:bg-red-100 text-red-500 p-2 rounded-lg border border-red-100 shadow-sm transition-all cursor-pointer"
+                        title="Delete Route"
+                      >
+                        <HiTrash className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -711,13 +755,22 @@ export const AdminDashboard = () => {
                       Reg: {b.bus_number}
                     </div>
                   </div>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
-                      b.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {b.is_active ? 'Active' : 'Suspended'}
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
+                        b.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      {b.is_active ? 'Active' : 'Suspended'}
+                    </span>
+                    <button
+                      onClick={() => handleDeleteBus(b.id)}
+                      className="bg-red-50 hover:bg-red-100 text-red-500 p-1.5 rounded-lg border border-red-100 shadow-sm transition-all cursor-pointer"
+                      title="Delete Bus"
+                    >
+                      <HiTrash className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
